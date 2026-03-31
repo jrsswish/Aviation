@@ -55,14 +55,28 @@ def delay_ratio_analysis(x):
         delay_percent = ratio * 100
         delay_percent_values.append(delay_percent)
 
-    plt.bar(delay_most_index, delay_percent_values)
-    plt.xlabel("Country")
-    plt.ylabel("Delay Percentage (Delay Count / Total Departure)")
-    plt.title("Delay Percentage on Country")
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+
+    ax1.bar(delay_most_index, delay_percent_values, color="darkred" )
+    ax1.set_xlabel("Country")
+    ax1.set_ylabel("Delay Percentage (Delay Count / Total Departure)")
+    ax1.set_title("Delay Percentage on Country")
+
+    ax2.pie(delay_percent_values, labels=delay_most_index)
+    plt.tight_layout()
     plt.show()
+
+def specific_airport_analysis(x):
+    df = open_csv(x)
+    airport_most = df.loc[df["STATE_NAME"] == 'France']["APT_ICAO"].value_counts().sort_values(ascending=False)
+
+    plt.plot(airport_most.index, airport_most.values)
+    plt.show()
+
 
 if __name__ == '__main__':
     input1 = sys.argv[1]
     # country_analysis(input1)
     # departure_analysis(input1)
     delay_ratio_analysis(input1)
+    # specific_airport_analysis(input1)
