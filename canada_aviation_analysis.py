@@ -38,12 +38,18 @@ def occurence_type_analysis(x):
 def occurence_sentence_analysis(x):
     df = open_csv(x)
     df = pd.DataFrame(df)
-    summary_sentences = df["Summary"].dropna().apply(sent_tokenize)
-    stop_words = set(stopwords.words('english'))
-    print(summary_sentences)
-    print(stop_words)
+    df['Summary Tokenized'] = df["Summary"].dropna().apply(sent_tokenize)
+    stop_words = set(stopwords.words("english"))
+
+    for index, row in df.iterrows():
+        for sentence in df["Summary Tokenized"][index]:
+            word_list = sentence.split()
+            filtered_word = [word for word in word_list if word not in stop_words]
+            df["Summary Tokenized"][index] = filtered_word
 
 
+
+    print(df["Summary Tokenized"].head(5))
 
 if __name__ == '__main__':
     input1 = sys.argv[1]
