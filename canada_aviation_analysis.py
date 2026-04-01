@@ -35,21 +35,29 @@ def occurence_type_analysis(x):
     plt.title("Occurence Type that occurs the most")
     plt.show()
 
+
 def occurence_sentence_analysis(x):
     df = open_csv(x)
     df = pd.DataFrame(df)
     df['Summary Tokenized'] = df["Summary"].dropna().apply(sent_tokenize)
     stop_words = set(stopwords.words("english"))
 
+    idx_column = df.columns.get_loc("Summary Tokenized")
+
     for index, row in df.iterrows():
-        for sentence in df["Summary Tokenized"][index]:
+
+        if index == 3:
+            break
+        for sentence in row['Summary Tokenized']:
             word_list = sentence.split()
             filtered_word = [word for word in word_list if word not in stop_words]
-            df["Summary Tokenized"][index] = filtered_word
+
+
+        df.iat[index, idx_column] = filtered_word
 
 
 
-    print(df["Summary Tokenized"].head(5))
+    # print(df["Summary Tokenized"].head(5))
 
 if __name__ == '__main__':
     input1 = sys.argv[1]
