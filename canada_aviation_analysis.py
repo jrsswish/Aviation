@@ -5,6 +5,8 @@ import sys
 import nltk
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk import FreqDist
 
 # word tokenize: breaks down the text into words
 # sent tokenize: breaks down the text into sentences
@@ -43,6 +45,7 @@ def occurence_sentence_analysis(x):
     stop_words = set(stopwords.words("english"))
 
     idx_column = df.columns.get_loc("Summary Tokenized")
+    Stemmer = PorterStemmer()
 
     for index, row in df.iterrows():
 
@@ -50,11 +53,17 @@ def occurence_sentence_analysis(x):
             break
         for sentence in row['Summary Tokenized']:
             word_list = sentence.split()
-            filtered_word = [word for word in word_list if word not in stop_words]
-
+            filtered_word = [word.lower() for word in word_list if word not in stop_words]
 
         df.iat[index, idx_column] = filtered_word
+    # removed all of the word that has numeric
+    # we saw that numeric had . so we replaced it with '' so that it can bypass the .isnumeric() function
+    all_word = [word for tokens in df['Summary Tokenized'].dropna() for word in tokens if not word.replace('.', '').isnumeric()]
+    fdist = FreqDist(all_word)
+    print(fdist.most_common(20))
 
+    fdist.plot(20, cumulative=True)
+    plt.show()
 
 
     # print(df["Summary Tokenized"].head(5))
