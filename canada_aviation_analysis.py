@@ -3,13 +3,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 import nltk
-from nltk import word_tokenize, sent_tokenize
+from nltk import word_tokenize, sent_tokenize, RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk import FreqDist
+import spacy
 
 # word tokenize: breaks down the text into words
 # sent tokenize: breaks down the text into sentences
+
+nlp_en = spacy.load('en_core_web_sm')
+nlp_fr = spacy.load('fr_core_news_sm')
 
 def open_csv(x):
     df = pd.read_csv(x)
@@ -81,7 +85,9 @@ def occurence_type_more_analysis(x):
 
     # this is all words specifically with occurence type of EMERGENCY/PRIORITY
     # print(df['Emergency Tokenized'])
-    all_words = [word for tokens in df['Emergency Tokenized'].dropna() for word in tokens if not word.replace('.', '').isnumeric()]
+    most_occur_type = df.loc[df["OccIncidentTypeID_DisplayEng"] == "EMERGENCY/PRIORITY (xi)", "Emergency Tokenized"]
+    print(most_occur_type)
+    all_words = [word for tokens in most_occur_type.dropna() for word in tokens if not word.replace('.', '').isnumeric() and not word.isalnum()]
     fdist = FreqDist(all_words)
     fdist.plot(20, cumulative=True)
     plt.show()
