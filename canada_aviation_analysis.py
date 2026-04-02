@@ -51,6 +51,7 @@ def occurence_sentence_analysis(x):
         if not isinstance(row['Summary Tokenized'], float):
             for sentence in row['Summary Tokenized']:
                 word_list = sentence.split()
+                # takes the stop words in english and french
                 filtered_word = [word.lower() for word in word_list if word.lower() not in stop_words and word.lower() not in stop_words_french]
 
             df.iat[index, idx_column] = filtered_word
@@ -63,28 +64,25 @@ def occurence_sentence_analysis(x):
     plt.show()
     # print(df["Summary Tokenized"].head(5))
 
-def occurence_sentence_more_analysis(x):
+def occurence_type_more_analysis(x):
     df = open_csv(x)
-    df['Summary Tokenized'] = df["Summary"].dropna().apply(sent_tokenize)
+    df['Emergency Tokenized'] = df["ICAO_DisplayEng"].dropna().apply(word_tokenize)
     stop_words = set(stopwords.words("english"))
-    idx_column = df.columns.get_loc("Summary Tokenized")
+    stop_words_french = set(stopwords.words("french"))
+    idx_column = df.columns.get_loc("Emergency Tokenized")
 
     for index, row in df.iterrows():
-        for sentence in row['Summary Tokenized']:
-            word_list = sentence.split()
-            filtered_words = [word.lower() for word in word_list if word not in stop_words]
-
-        df.iat[index, idx_column] = filtered_words
+        if not isinstance(row['Emergency Tokenized'], float):
+            filtered_words = [word.lower() for word in row['Emergency Tokenized'] if word.lower() not in stop_words and word.lower() not in stop_words_french]
+            df.iat[index, idx_column] = filtered_words
 
     # we know that the most occurence type was EMERGENCY/PRIORITY
     # we will be specifically be diving into summary of those problems
 
     # this is all words specifically with occurence type of EMERGENCY/PRIORITY
-    df_occurence_idx = df.columns.get_loc("OccIncidentTypeID_DisplayEng")
-    df_emergency = df.iloc[:, df_occurence_idx]
-    all_words = [word for tokens in df_emergency.dropna() for word in tokens if not word.replace('.', '').isnumeric()]
+    # print(df['Emergency Tokenized'])
+    all_words = [word for tokens in df['Emergency Tokenized'].dropna() for word in tokens if not word.replace('.', '').isnumeric()]
     fdist = FreqDist(all_words)
-    print(fdist.most_common(20))
     fdist.plot(20, cumulative=True)
     plt.show()
 
@@ -92,5 +90,5 @@ if __name__ == '__main__':
     input1 = sys.argv[1]
     # location_analysis(input1)
     # occurence_type_analysis(input1)
-    occurence_sentence_analysis(input1)
-    # occurence_sentence_more_analysis(input1)
+    # occurence_sentence_analysis(input1)
+    occurence_type_more_analysis(input1)
