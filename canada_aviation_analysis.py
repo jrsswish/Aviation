@@ -43,33 +43,54 @@ def occurence_sentence_analysis(x):
     df = pd.DataFrame(df)
     df['Summary Tokenized'] = df["Summary"].dropna().apply(sent_tokenize)
     stop_words = set(stopwords.words("english"))
+    stop_words_french = set(stopwords.words("french"))
 
     idx_column = df.columns.get_loc("Summary Tokenized")
-    Stemmer = PorterStemmer()
 
     for index, row in df.iterrows():
+        if not isinstance(row['Summary Tokenized'], float):
+            for sentence in row['Summary Tokenized']:
+                word_list = sentence.split()
+                filtered_word = [word.lower() for word in word_list if word.lower() not in stop_words and word.lower() not in stop_words_french]
 
-        if index == 3:
-            break
-        for sentence in row['Summary Tokenized']:
-            word_list = sentence.split()
-            filtered_word = [word.lower() for word in word_list if word not in stop_words]
-
-        df.iat[index, idx_column] = filtered_word
+            df.iat[index, idx_column] = filtered_word
     # removed all of the word that has numeric
     # we saw that numeric had . so we replaced it with '' so that it can bypass the .isnumeric() function
     all_word = [word for tokens in df['Summary Tokenized'].dropna() for word in tokens if not word.replace('.', '').isnumeric()]
     fdist = FreqDist(all_word)
-    print(fdist.most_common(20))
 
     fdist.plot(20, cumulative=True)
     plt.show()
-
-
     # print(df["Summary Tokenized"].head(5))
+
+def occurence_sentence_more_analysis(x):
+    df = open_csv(x)
+    df['Summary Tokenized'] = df["Summary"].dropna().apply(sent_tokenize)
+    stop_words = set(stopwords.words("english"))
+    idx_column = df.columns.get_loc("Summary Tokenized")
+
+    for index, row in df.iterrows():
+        for sentence in row['Summary Tokenized']:
+            word_list = sentence.split()
+            filtered_words = [word.lower() for word in word_list if word not in stop_words]
+
+        df.iat[index, idx_column] = filtered_words
+
+    # we know that the most occurence type was EMERGENCY/PRIORITY
+    # we will be specifically be diving into summary of those problems
+
+    # this is all words specifically with occurence type of EMERGENCY/PRIORITY
+    df_occurence_idx = df.columns.get_loc("OccIncidentTypeID_DisplayEng")
+    df_emergency = df.iloc[:, df_occurence_idx]
+    all_words = [word for tokens in df_emergency.dropna() for word in tokens if not word.replace('.', '').isnumeric()]
+    fdist = FreqDist(all_words)
+    print(fdist.most_common(20))
+    fdist.plot(20, cumulative=True)
+    plt.show()
 
 if __name__ == '__main__':
     input1 = sys.argv[1]
     # location_analysis(input1)
     # occurence_type_analysis(input1)
     occurence_sentence_analysis(input1)
+    # occurence_sentence_more_analysis(input1)
