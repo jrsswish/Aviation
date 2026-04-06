@@ -113,13 +113,17 @@ def solutions_OSU(x):
             filtered_words = [word.lower() for word in row['Summary Tokenized'] if word.lower() not in stop_words and word.lower() not in stop_words_french]
             df.iat[index, idx_column_summary] = filtered_words
 
-    df_only_OSU = df.loc[df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)", "Summary Tokenized"]
 
     # check the summary for the word the contains summary to review the problems
     df_only_injuries = df.loc[(df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)") & (df["Summary"].str.contains('injuries')), "Summary"]
-    print(df_only_injuries)
+    # df_only_short = df.loc[(df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)") & (df["Summary"].str.contains('short')), "Summary"]
+    df_only_vol = df.loc[(df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)") & (df["Summary"].str.contains('vol')), "Summary"]
 
-    all_word = [word for token in df_only_OSU.dropna() for word in token if word.isalpha()]
+    print(df_only_vol)
+
+    # df_only_OSU = df.loc[df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)", "Summary Tokenized"]
+
+    # all_word = [word for token in df_only_OSU.dropna() for word in token if word.isalpha()]
 
     # fdist = FreqDist(all_word)
     # fdist.plot(20, cumulative=True)
