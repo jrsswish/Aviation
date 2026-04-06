@@ -68,7 +68,7 @@ def occurence_sentence_analysis(x):
     plt.show()
     # print(df["Summary Tokenized"].head(5))
 
-def occurence_type_more_analysis(x):
+def occurence_category_analysis(x):
     df = open_csv(x)
     df['Emergency Tokenized'] = df["ICAO_DisplayEng"].dropna().apply(word_tokenize)
     stop_words = set(stopwords.words("english"))
@@ -86,10 +86,29 @@ def occurence_type_more_analysis(x):
     # this is all words specifically with occurence type of EMERGENCY/PRIORITY
     # print(df['Emergency Tokenized'])
     most_occur_type = df.loc[df["OccIncidentTypeID_DisplayEng"] == "EMERGENCY/PRIORITY (xi)", "Emergency Tokenized"]
-    print(most_occur_type)
     all_words = [word for tokens in most_occur_type.dropna() for word in tokens if not word.replace('.', '').isnumeric() and not word.isalnum()]
     fdist = FreqDist(all_words)
     fdist.plot(20, cumulative=True)
+    plt.tight_layout()
+    plt.show()
+
+def solutions_OSU(x):
+    df = open_csv(x)
+    df['Summary Tokenized'] = df['Summary'].dropna().apply(word_tokenize)
+    stop_words = set(stopwords.words("english"))
+    stop_words_french = set(stopwords.words("french"))
+    idx_column_summary = df.columns.get_loc("Summary Tokenized")
+
+    for index, row in df.iterrows():
+        if not isinstance(row['Summary Tokenized'], float):
+            filtered_words = [word.lower() for word in row['Summary Tokenized'] if word.lower() not in stop_words and word.lower() not in stop_words_french]
+            df.iat[index, idx_column_summary] = filtered_words
+
+    df_only_OSU = df.loc[df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)", "Summary Tokenized"]
+    all_word = [word for token in df_only_OSU.dropna() for word in token if word.isalpha()]
+    fdist = FreqDist(all_word)
+    fdist.plot(20, cumulative=True)
+    plt.tight_layout()
     plt.show()
 
 if __name__ == '__main__':
@@ -97,4 +116,5 @@ if __name__ == '__main__':
     # location_analysis(input1)
     # occurence_type_analysis(input1)
     # occurence_sentence_analysis(input1)
-    occurence_type_more_analysis(input1)
+    # occurence_category_analysis(input1)
+    solutions_OSU(input1)
