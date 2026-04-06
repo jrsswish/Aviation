@@ -9,6 +9,15 @@ from nltk.stem import PorterStemmer
 from nltk import FreqDist
 import spacy
 
+# Show all rows
+pd.set_option('display.max_rows', None)
+
+# Show all columns
+pd.set_option('display.max_columns', None)
+
+# Show full content of each cell (no truncation)
+pd.set_option('display.max_colwidth', None)
+
 # word tokenize: breaks down the text into words
 # sent tokenize: breaks down the text into sentences
 
@@ -107,7 +116,7 @@ def solutions_OSU(x):
     df_only_OSU = df.loc[df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)", "Summary Tokenized"]
 
     # check the summary for the word the contains summary to review the problems
-    df_only_injuries = df.loc[(df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)") & (df["Summary Tokenized"].str.contains('injuries')), "Summary"]
+    df_only_injuries = df.loc[(df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)") & (df["Summary"].str.contains('injuries')), "Summary"]
     print(df_only_injuries)
 
     all_word = [word for token in df_only_OSU.dropna() for word in token if word.isalpha()]
