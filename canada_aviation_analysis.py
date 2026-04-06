@@ -105,11 +105,18 @@ def solutions_OSU(x):
             df.iat[index, idx_column_summary] = filtered_words
 
     df_only_OSU = df.loc[df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)", "Summary Tokenized"]
+
+    # check the summary for the word the contains summary to review the problems
+    df_only_injuries = df.loc[(df["ICAO_DisplayEng"] == "UNDERSHOOT/OVERSHOOT (USOS)") & (df["Summary Tokenized"].str.contains('injuries')), "Summary"]
+    print(df_only_injuries)
+
     all_word = [word for token in df_only_OSU.dropna() for word in token if word.isalpha()]
-    fdist = FreqDist(all_word)
-    fdist.plot(20, cumulative=True)
-    plt.tight_layout()
-    plt.show()
+
+    # fdist = FreqDist(all_word)
+    # fdist.plot(20, cumulative=True)
+    # plt.tight_layout()
+    # plt.show()
+
 
 if __name__ == '__main__':
     input1 = sys.argv[1]
